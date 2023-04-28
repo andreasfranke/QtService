@@ -150,12 +150,12 @@ int WindowsServiceBackend::runService(int &argc, char **argv, int flags)
 	setStatus(SERVICE_START_PENDING);
 
 	lock.relock();
-	qCDebug(logBackend) << "continuing control thread";
+	qCInfo(logBackend) << "continuing control thread";
 	_startCondition.wakeAll();
 	lock.unlock();
 
 	//execute the app
-	qCDebug(logBackend) << "running application";
+	qCInfo(logBackend) << "running application";
     isApplicationReady = true;
 	_status.dwServiceSpecificExitCode = app.exec();
 	if(_status.dwServiceSpecificExitCode != EXIT_SUCCESS)
@@ -164,7 +164,7 @@ int WindowsServiceBackend::runService(int &argc, char **argv, int flags)
 
 	//cleanup
 	if(controlThread.isRunning()) {
-		qCDebug(logBackend) << "stopping control thread";
+		qCInfo(logBackend) << "stopping control thread";
 		controlThread.requestInterruption();
 		if(!controlThread.wait(2000)) {
 			controlThread.terminate();
@@ -261,13 +261,13 @@ void WindowsServiceBackend::serviceMain(DWORD dwArgc, wchar_t **lpszArgv)
     while (!isApplicationReady)
     {
         lock.relock();
-        qCDebug(logBackend) << "wait for main thread to finish startup";
+        qCInfo(logBackend) << "wait for main thread to finish startup";
         _backendInstance->_startCondition.wait(&_backendInstance->_svcLock, 5000);
         lock.unlock();
     }
 
 	// handle the start event
-	qCDebug(logBackend) << "handle service start event";
+	qCInfo(logBackend) << "handle service start event";
 	_backendInstance->setStatus(SERVICE_START_PENDING);
 	QMetaObject::invokeMethod(_backendInstance, "processServiceCommand", Qt::QueuedConnection,
 							  Q_ARG(QtService::ServiceBackend::ServiceCommand, ServiceCommand::Start));
@@ -313,8 +313,8 @@ void WindowsServiceBackend::winsvcMessageHandler(QtMsgType type, const QMessageL
 	{
 		static QMutex logMutex;
 		static const auto tFile = []() -> QFile* {
-			auto tFile = new QFile{xPath + QStringLiteral("/log.txt")};
-			if (tFile->open(QIODevice::Append | QIODevice::Text)) {
+			auto tFile = new QFile{xPath + QStringLiteral("/logService.txt")};
+			if (tFile->open(QIODevice::Truncate | QIODevice::Text)) {
 				return tFile;
 			} else {
 				delete tFile;

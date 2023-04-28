@@ -263,7 +263,7 @@ void Service::addCallback(const QByteArray &kind, const std::function<QVariant (
 {
 	Q_ASSERT_X(fn, Q_FUNC_INFO, "fn must be a valid function");
 	d->callbacks.insert(kind, fn);
-	qCDebug(logSvc) << "Registered dynamic callback for name" << kind;
+	qCInfo(logSvc) << "Registered dynamic callback for name" << kind;
 }
 
 Service::~Service() = default;

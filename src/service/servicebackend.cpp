@@ -42,7 +42,7 @@ void ServiceBackend::signalTriggered(int signal)
 
 void ServiceBackend::processServiceCommand(ServiceCommand code)
 {
-	qCDebug(logBackend) << "Proccessing service command" << code;
+	qCInfo(logBackend) << "Proccessing service command" << code;
 	if(d->operating && code != ServiceCommand::Stop) { //always allow stopping
 		qCWarning(logBackend) << "Ignoring command of type" << code << "as another command is currently beeing processed";
 		return;
@@ -183,7 +183,7 @@ bool ServiceBackend::preStartService()
 
 void ServiceBackend::onSvcStarted(bool success)
 {
-	qCDebug(logBackend) << "Completed service start with result" << success;
+	qCInfo(logBackend) << "Completed service start with result" << success;
 	d->operating = false;
 	if(success) {
 		d->service->d->isRunning = true;
@@ -193,7 +193,7 @@ void ServiceBackend::onSvcStarted(bool success)
 
 void ServiceBackend::onSvcStopped()
 {
-	qCDebug(logBackend) << "Completed service stop";
+	qCInfo(logBackend) << "Completed service stop";
 	d->operating = false;
 	d->service->d->stopTerminals();
 	d->service->d->isRunning = false;
@@ -201,14 +201,14 @@ void ServiceBackend::onSvcStopped()
 
 void ServiceBackend::onSvcReloaded(bool success)
 {
-	qCDebug(logBackend) << "Completed service reload with result" << success;
+	qCInfo(logBackend) << "Completed service reload with result" << success;
 	d->operating = false;
 	Q_UNUSED(success)
 }
 
 void ServiceBackend::onSvcResumed(bool success)
 {
-	qCDebug(logBackend) << "Completed service resume with result" << success;
+	qCInfo(logBackend) << "Completed service resume with result" << success;
 	d->operating = false;
 	if(success)
 		d->service->d->wasPaused = false;
@@ -216,7 +216,7 @@ void ServiceBackend::onSvcResumed(bool success)
 
 void ServiceBackend::onSvcPaused(bool success)
 {
-	qCDebug(logBackend) << "Completed service pause with result" << success;
+	qCInfo(logBackend) << "Completed service pause with result" << success;
 	d->operating = false;
 	if(success)
 		d->service->d->wasPaused = true;
